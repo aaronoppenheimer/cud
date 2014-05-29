@@ -27,11 +27,13 @@
                 <button id="connect-button">Connect!</button>
             </div>
             <div id="connected">
-                <div id="the-log">
-                    yahoo!
-                </div>
-                <div id="the-input">
-                    <input type="text" placeholder="type here..." name="the-input" size="80"/>
+                <div class="well">
+                    <div id="the-log">
+                        yahoo!
+                    </div>
+                    <div id="the-input">
+                        <input type="text" placeholder="type here..." name="the-input" size="80"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -60,7 +62,7 @@ function update_log() {
                 }
             }
         });
-        window.setTimeout (update_log, 1000);
+        window.setTimeout (update_log, 200);
     }
 }
 
