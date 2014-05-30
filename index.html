@@ -10,6 +10,10 @@
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
 
+    <script src="/static/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+    <script src="/static/codemirror/mode/javascript/javascript.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -28,13 +32,33 @@
                 <button id="connect-button">Connect!</button>
             </div>
             <div id="connected">
-                <div class="well">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Game Log</h3>
+                  </div>
+                  <div class="panel-body">
                     <div id="the-log">
                         yahoo!
                     </div>
                     <div id="the-input">
                         <input type="text" placeholder="type here..." name="the-input" size="80"/>
                     </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Editor</h3>
+                  </div>
+                  <div class="panel-body">
+                    <div id="the-verb-area">
+                        <input type="text" placeholder="verb name here" name="the-verb" size="30"/>
+                        <button id="verb-submit">Fetch!</button>
+                    </div>
+                    <textarea id="the-edit" style="width:100%;" rows=30></textarea>
+                    <div id="the-submit">
+                        <button id="edit-submit">Submit!</button>
+                    </div>
+                  </div>
                 </div>
             </div>
         </div>
@@ -47,6 +71,7 @@
      
 
 var done = false;
+var theCodeMirror;
 
 function add_to_log(the_string) {
     $("#the-log").html($('#the-log').html() + the_string);
@@ -87,6 +112,32 @@ function update_log() {
     }
 }
 
+function fetch_verb() {
+    verb_text = $("input[name='the-verb']").val();
+    $.ajax({
+        type: "POST",
+        url: "/fetchverb",
+        data: {"verb_text":$("input[name='the-verb']").val()}
+    })
+    .done(function(string) {
+        theCodeMirror.setValue(string);
+    });
+}
+
+function send_program() {
+    prog_text = alert(theCodeMirror.getValue());
+    verb_text = 
+    $.ajax({
+        type: "PUT",
+        url: "/program",
+        data: {"input_string": prog_text, "input_verb":$("input[name='the-verb']").val()}
+    })
+    .done(function() {
+        add_to_log(">(Program Sent)<br>");
+        $("#the-input input").val('');
+    });
+}
+
 $(document).ready(function() {
 
      $("#connect-button").click(function(e) {
@@ -117,6 +168,16 @@ $(document).ready(function() {
         }
      });
 
+    $("#edit-submit").click(function(e) {
+        send_program();
+        e.preventDefault();        
+    });
+
+    $("#verb-submit").click(function(e) {
+        fetch_verb();
+        e.preventDefault();        
+    });
+
     $(window).bind("beforeunload", function(eventObject) {
         done=true;
         $.ajax({
@@ -127,6 +188,12 @@ $(document).ready(function() {
 
     $('#notconnected').show();
     $('#connected').hide();
+
+    theCodeMirror = CodeMirror.fromTextArea(document.getElementById('the-edit'), {
+            mode: 'python',
+            lineNumbers: true
+        });   
+    
 });
  </script>
   </body>
