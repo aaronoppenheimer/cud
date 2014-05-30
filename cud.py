@@ -57,10 +57,13 @@ class CudProgram(object):
 class CudLog(object):
     exposed = True
     def GET(self):
+        if not 'server' in cherrypy.session:
+            return ''
+            
         global fetch_lock
         fetch_lock.acquire()
         val=''
-        print 'getting...'
+#         print 'getting...'
         try:
             val=cherrypy.session['server'].read_very_eager()
             if val:
@@ -81,13 +84,14 @@ class CudKill(object):
 def process_verb_code(the_code):
     # drop the first line
     lines = the_code.split('\n')
-    lines = lines[1:]
+    while len(lines)>1 and lines[0].strip()[0] != '1':
+        lines = lines[1:]
     
     newlines=[]
     for line in lines:
         tmp=line.split(':',1)
         if len(tmp) > 1:
-            newlines.append(tmp[1])
+            newlines.append(tmp[1].strip())
 
     new_code = '\n'.join(newlines)
     print '\n\n'+new_code+'\n\n'
@@ -162,25 +166,9 @@ if __name__ == '__main__':
         }
     )
 
+    cherrypy.log.screen = False
+
     cherrypy.engine.start()
     cherrypy.engine.block()
     
-if __name__ == '__mainXXXX__':
-    conf = {
-        '/': {
-         'tools.sessions.on': True,
-         'tools.staticdir.root': os.path.abspath(os.getcwd())
-        },
-        '/connect': {
-            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-            'tools.response_headers.on': True,
-            'tools.response_headers.headers': [('Content-Type', 'text/plain')],
-        },
-        '/static': {
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': './public'
-        }
-    }
-    webapp = Cud()
-    webapp.generator = CudWebService()
-    cherrypy.quickstart(webapp, '/', conf)
+

@@ -125,12 +125,12 @@ function fetch_verb() {
 }
 
 function send_program() {
-    prog_text = alert(theCodeMirror.getValue());
-    verb_text = 
+    prog_text = theCodeMirror.getValue();
+    verb_text = $("input[name='the-verb']").val();
     $.ajax({
         type: "PUT",
         url: "/program",
-        data: {"input_string": prog_text, "input_verb":$("input[name='the-verb']").val()}
+        data: {"input_program": prog_text, "input_verb":verb_text}
     })
     .done(function() {
         add_to_log(">(Program Sent)<br>");
