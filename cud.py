@@ -3,6 +3,7 @@ import random
 import string
 
 import cherrypy
+import telnetlib
 
 class CudIndex(object):
 
@@ -16,30 +17,36 @@ class CudConnect(object):
 
     def POST(self, server='hey', port='bub'):
         print 'connecting {0} {1}'.format(server,port)
-        cherrypy.session['input_string'] = ''
+        the_telnet = telnetlib.Telnet(server, int(port))
+        cherrypy.session['server'] = the_telnet
 
 class CudInput(object):
     exposed = True
 
     def PUT(self, input_string):
-        print 'input {0}'.format(input_string)
-        if cherrypy.session['input_string']:
-            cherrypy.session['input_string'] = cherrypy.session['input_string']+'<br>'+input_string
-        else:
-            cherrypy.session['input_string'] = input_string
+        print 'input >>{0}<<'.format(input_string)
+        cherrypy.session['server'].write('{0}\n'.format(input_string))
 
 class CudLog(object):
     exposed = True
     def GET(self):
         print 'getting...'
-        val=cherrypy.session['input_string']
-        cherrypy.session['input_string'] = ''
+        val=''
+        try:
+            val=cherrypy.session['server'].read_very_eager()
+            if val:
+                val = val.replace('\n','<br>') + '\n'
+        except EOFError:
+            print 'CLOSED!'
+            val = '%%%'
+            cherrypy.session['server'].close()
         return val
 
 class CudKill(object):
     exposed = True
     def PUT(self):
         print 'KILLED!'
+        cherrypy.session['server'].close()
 
 if __name__ == '__main__':
 

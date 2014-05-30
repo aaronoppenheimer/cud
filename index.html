@@ -18,11 +18,12 @@
     <![endif]-->
   </head>
   <body>
+    <br><br>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            The Cow Says Moo!
             <div id="notconnected">
-                <input type="text" value="54.86.130.230" name="server" />
+<!--                 <input type="text" value="54.86.130.230" name="server" /> -->
+                <input type="text" value="localhost" name="server" />
                 <input type="text" value="7777" name="port" /> 
                 <button id="connect-button">Connect!</button>
             </div>
@@ -47,6 +48,23 @@
 
 var done = false;
 
+function add_to_log(the_string) {
+    $("#the-log").html($('#the-log').html() + the_string);
+    $("#the-log").prop({ scrollTop: $("#the-log").prop("scrollHeight") });
+}
+
+function clear_log() {
+    $("#the-log").html('');
+    $("#the-log").prop({ scrollTop: $("#the-log").prop("scrollHeight") });
+}
+
+function quit_it() {
+    done = true;
+    clear_log();
+    $('#notconnected').show();
+    $('#connected').hide();    
+}
+
 function update_log() {
     if (done == true) {
         return;
@@ -57,12 +75,15 @@ function update_log() {
             async: true,
             success: function(string) {
                 if (string != '') {
-                    $("#the-log").html($('#the-log').html() + '<br>' + string);
-                    $("#the-log").prop({ scrollTop: $("#the-log").prop("scrollHeight") });
+                    if (string == '%%%') {
+                        quit_it();
+                    } else {
+                        add_to_log(string);
+                    }
                 }
             }
         });
-        window.setTimeout (update_log, 500);
+        window.setTimeout (update_log, 200);
     }
 }
 
@@ -71,8 +92,10 @@ $(document).ready(function() {
      $("#connect-button").click(function(e) {
         $.post("/connect", {"server": $("input[name='server']").val(), "port": $("input[name='port']").val()})
         .done(function(string) {
+            clear_log();
            $("#notconnected").hide();
            $("#connected").show();
+            done = false;
            window.setTimeout( update_log, 20 );
         });
        e.preventDefault();
@@ -80,34 +103,26 @@ $(document).ready(function() {
 
      $("#the-input").keypress(function(e) {
         if (e.which == 13) {
+            the_input_string = $("input[name='the-input']").val();
            $.ajax({
               type: "PUT",
               url: "/input",
-              data: {"input_string": $("input[name='the-input']").val()}
+              data: {"input_string": the_input_string}
            })
            .done(function() {
-                $("#the-input input").val('')
+                add_to_log(">"+the_input_string+'<br>');
+                $("#the-input input").val('');
            });
            e.preventDefault();
         }
      });
 
-     $("#delete-string").click(function(e) {
-       $.ajax({
-          type: "DELETE",
-          url: "/generator"
-       })
-       .done(function() {
-          $("#the-string").hide();
-       });
-       e.preventDefault();
-     });
-
     $(window).bind("beforeunload", function(eventObject) {
-       $.ajax({
+        done=true;
+        $.ajax({
           type: "PUT",
           url: "/kill"
-       });
+        });
     })
 
     $('#notconnected').show();
