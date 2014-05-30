@@ -36,6 +36,11 @@ class CudLog(object):
         cherrypy.session['input_string'] = ''
         return val
 
+class CudKill(object):
+    exposed = True
+    def PUT(self):
+        print 'KILLED!'
+
 if __name__ == '__main__':
 
     cherrypy.tree.mount(
@@ -71,6 +76,15 @@ if __name__ == '__main__':
 
     cherrypy.tree.mount(
         CudLog(), '/log',
+        {'/': {
+                'tools.sessions.on': True,
+                'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+                }
+        }
+    )
+
+    cherrypy.tree.mount(
+        CudKill(), '/kill',
         {'/': {
                 'tools.sessions.on': True,
                 'request.dispatch': cherrypy.dispatch.MethodDispatcher()

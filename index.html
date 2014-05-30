@@ -62,7 +62,7 @@ function update_log() {
                 }
             }
         });
-        window.setTimeout (update_log, 200);
+        window.setTimeout (update_log, 500);
     }
 }
 
@@ -103,9 +103,16 @@ $(document).ready(function() {
        e.preventDefault();
      });
 
-        $('#notconnected').show();
-        $('#connected').hide();
-   });
+    $(window).bind("beforeunload", function(eventObject) {
+       $.ajax({
+          type: "PUT",
+          url: "/kill"
+       });
+    })
+
+    $('#notconnected').show();
+    $('#connected').hide();
+});
  </script>
   </body>
 </html>
