@@ -78,8 +78,10 @@ var string_buffer = [];
 var string_buffer_ptr = -1;
 
 function add_to_log(the_string) {
-    $("#the-log").html($('#the-log').html() + the_string);
-    $("#the-log").prop({ scrollTop: $("#the-log").prop("scrollHeight") });
+    $("#the-log").append(the_string);
+    setTimeout(function() {
+        $("#the-log").prop({ scrollTop: $("#the-log").prop("scrollHeight") });
+    },10);
 }
 
 function clear_log() {
