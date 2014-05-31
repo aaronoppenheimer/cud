@@ -160,6 +160,10 @@ $(document).ready(function() {
         if (e.which == 13) {
             the_input_string = $("input[name='the-input']").val();
             string_buffer_ptr=string_buffer.push(the_input_string)
+            if (string_buffer.length > 10) {
+                string_buffer.shift();
+                string_buffer_ptr = 10;
+            }
            $.ajax({
               type: "PUT",
               url: "/input",
