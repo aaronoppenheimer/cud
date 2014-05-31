@@ -13,14 +13,14 @@ class CudIndex(object):
 
     @cherrypy.expose
     def index(self):
-        print 'returning index'
+#         print 'returning index'
         return file('index.html')
 
 class CudConnect(object):
     exposed = True
 
     def POST(self, server='hey', port='bub'):
-        print 'connecting {0} {1}'.format(server,port)
+#         print 'connecting {0} {1}'.format(server,port)
         the_telnet = telnetlib.Telnet(server, int(port))
         cherrypy.session['server'] = the_telnet
 
@@ -28,7 +28,7 @@ class CudInput(object):
     exposed = True
 
     def PUT(self, input_string):
-        print 'input >>{0}<<'.format(input_string)
+#         print 'input >>{0}<<'.format(input_string)
         cherrypy.session['server'].write('{0}\n'.format(input_string))
 
 class CudFetchVerb(object):
@@ -37,7 +37,7 @@ class CudFetchVerb(object):
     def POST(self, verb_text):
         global fetch_lock
         fetch_lock.acquire()
-        print 'fetching verb {0}'.format(verb_text)
+#         print 'fetching verb {0}'.format(verb_text)
         cherrypy.session['server'].write('@list {0}\n'.format(verb_text))
         val=''
         while not val:
@@ -50,7 +50,7 @@ class CudProgram(object):
     exposed = True
 
     def PUT(self, input_verb, input_program):
-        print 'programming...'
+#         print 'programming...'
         cherrypy.session['server'].write('@program {0}\n'.format(input_verb))
         cherrypy.session['server'].write('{0}\n.\n'.format(input_program))
 
@@ -69,7 +69,7 @@ class CudLog(object):
             if val:
                 val = val.replace('\n','<br>') + '\n'
         except EOFError:
-            print 'CLOSED!'
+#             print 'CLOSED!'
             val = '%%%'
             cherrypy.session['server'].close()
         fetch_lock.release()
@@ -78,7 +78,7 @@ class CudLog(object):
 class CudKill(object):
     exposed = True
     def PUT(self):
-        print 'KILLED!'
+#         print 'KILLED!'
         cherrypy.session['server'].close()
 
 def process_verb_code(the_code):
@@ -94,7 +94,7 @@ def process_verb_code(the_code):
             newlines.append(tmp[1].strip())
 
     new_code = '\n'.join(newlines)
-    print '\n\n'+new_code+'\n\n'
+#     print '\n\n'+new_code+'\n\n'
     return new_code
 
 if __name__ == '__main__':
