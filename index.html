@@ -31,11 +31,13 @@
                 <input type="text" value="7777" name="port" /> 
                 <button id="connect-button">Connect!</button>
             </div>
+            
             <div id="connected">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Game Log</h3>
-                  </div>
+                <ul class="nav nav-tabs">
+                    <li class="active" id="log-tab"><a href="#">Log</a></li>
+                    <li id="program-tab"><a href="#">Program</a></li>
+                </ul>
+                <div id="log-panel" class="panel panel-default">
                   <div class="panel-body">
                     <div id="the-log">
                         yahoo!
@@ -45,10 +47,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Editor</h3>
-                  </div>
+                <div id="program-panel" class="panel panel-default">
                   <div class="panel-body">
                     <div id="the-verb-area">
                         <input type="text" placeholder="verb name here" name="the-verb" size="30"/>
@@ -178,6 +177,20 @@ $(document).ready(function() {
         e.preventDefault();        
     });
 
+    $('#log-tab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+      $('#log-panel').show();
+      $('#program-panel').hide();
+    });
+
+    $('#program-tab a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+      $('#program-panel').show();
+      $('#log-panel').hide();
+    });
+
     $(window).bind("beforeunload", function(eventObject) {
         done=true;
         $.ajax({
@@ -188,6 +201,7 @@ $(document).ready(function() {
 
     $('#notconnected').show();
     $('#connected').hide();
+    $('#program-panel').hide();
 
     theCodeMirror = CodeMirror.fromTextArea(document.getElementById('the-edit'), {
             mode: 'python',
