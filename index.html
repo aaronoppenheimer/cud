@@ -26,8 +26,8 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div id="notconnected">
-<!--                 <input type="text" value="54.86.130.230" name="server" /> -->
-                <input type="text" value="localhost" name="server" />
+                <input type="text" value="54.86.130.230" name="server" />
+<!--                 <input type="text" value="localhost" name="server" /> -->
                 <input type="text" value="7777" name="port" /> 
                 <button id="connect-button">Connect!</button>
             </div>
@@ -73,6 +73,9 @@
 
 var done = false;
 var theCodeMirror;
+
+var string_buffer = [];
+var string_buffer_ptr = -1;
 
 function add_to_log(the_string) {
     $("#the-log").html($('#the-log').html() + the_string);
@@ -153,9 +156,10 @@ $(document).ready(function() {
        e.preventDefault();
      });
 
-     $("#the-input").keypress(function(e) {
+     $("#the-input").keydown(function(e) {
         if (e.which == 13) {
             the_input_string = $("input[name='the-input']").val();
+            string_buffer_ptr=string_buffer.push(the_input_string)
            $.ajax({
               type: "PUT",
               url: "/input",
@@ -166,6 +170,18 @@ $(document).ready(function() {
                 $("#the-input input").val('');
            });
            e.preventDefault();
+        } else if (e.which == 38) {
+            if (string_buffer_ptr > 0) {
+                str = string_buffer[string_buffer_ptr - 1];
+                $("input[name='the-input']").val(str);
+                string_buffer_ptr = string_buffer_ptr - 1;
+            }
+        } else if (e.which == 40) {
+            if (string_buffer_ptr < string_buffer.length) {
+                str = string_buffer[string_buffer_ptr+1];
+                $("input[name='the-input']").val(str);
+                string_buffer_ptr = string_buffer_ptr + 1;
+            }
         }
      });
 
