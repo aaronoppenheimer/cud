@@ -37,14 +37,16 @@ class CudFetchVerb(object):
     def POST(self, verb_text):
         global fetch_lock
         fetch_lock.acquire()
-#         print 'fetching verb {0}'.format(verb_text)
-        cherrypy.session['server'].write('@list {0}\n'.format(verb_text))
+#        print 'fetching verb {0}'.format(verb_text)
+        cherrypy.session['server'].write('@list {0}\n\n;\n'.format(verb_text))
         val=''
-        while not val:
-            val=cherrypy.session['server'].read_very_eager()
+        val=cherrypy.session['server'].expect(['=> 0'])[2]
+
         fetch_lock.release()
         
-        return process_verb_code(val)
+        code = process_verb_code(val)
+#        print '\n\n{0}\n\n'.format(code)
+        return code
         
 class CudProgram(object):
     exposed = True
@@ -91,7 +93,7 @@ def process_verb_code(the_code):
     for line in lines:
         tmp=line.split(':',1)
         if len(tmp) > 1:
-            newlines.append(tmp[1].strip())
+            newlines.append(tmp[1])
 
     new_code = '\n'.join(newlines)
 #     print '\n\n'+new_code+'\n\n'
