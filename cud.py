@@ -68,8 +68,8 @@ class CudLog(object):
 #         print 'getting...'
         try:
             val=cherrypy.session['server'].read_very_eager()
-            if val:
-                val = val.replace('\n','<br>') + '\n'
+#             if val:
+#                 val = val.replace('\n','<br>') + '\n'
         except EOFError:
 #             print 'CLOSED!'
             val = '%%%'
