@@ -20,7 +20,7 @@ class CudConnect(object):
     exposed = True
 
     def POST(self, server='hey', port='bub'):
-#         print 'connecting {0} {1}'.format(server,port)
+        print 'connecting {0} {1}'.format(server,port)
         the_telnet = telnetlib.Telnet(server, int(port))
         cherrypy.session['server'] = the_telnet
 
@@ -38,9 +38,9 @@ class CudFetchVerb(object):
         global fetch_lock
         fetch_lock.acquire()
 #        print 'fetching verb {0}'.format(verb_text)
-        cherrypy.session['server'].write('@list {0}\n\n;\n'.format(verb_text))
+        cherrypy.session['server'].write('@list {0}\n\n;"%%%"\n'.format(verb_text))
         val=''
-        val=cherrypy.session['server'].expect(['=> 0'])[2]
+        val=cherrypy.session['server'].expect(['=> "%%%"'])[2]
 
         fetch_lock.release()
         
