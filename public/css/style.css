@@ -17,5 +17,6 @@
 
 .pre {
     white-space: pre;
-    word-wrap:break-word;    
+    word-wrap: break-word;    
+    font-family: 'Anonymous Pro';    
 }
